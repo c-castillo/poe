@@ -12,6 +12,10 @@
  *   },
  */
 
+const HDWalletProvider = require("truffle-hdwallet-provider");
+const mnemonic =
+  "dust color dilemma like gossip climb van camp doctor autumn husband festival";
+
 module.exports = {
   networks: {
     development: {
@@ -19,6 +23,17 @@ module.exports = {
       port: 8545,
       network_id: "*", // Match any network id
       gas: 4600000
+    },
+    rinkeby: {
+      provider: function() {
+        return new HDWalletProvider(
+          mnemonic,
+          "https://rinkeby.infura.io/v3/25bc31a257aa44548da854df36586f28"
+        );
+      },
+      network_id: "4",
+      gas: 4600000,
+      gasPrice: 30000000000
     }
   }
 };

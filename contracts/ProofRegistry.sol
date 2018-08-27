@@ -1,12 +1,14 @@
 pragma solidity ^0.4.24;
 pragma experimental ABIEncoderV2;
 
+import "zeppelin/contracts/lifecycle/Destructible.sol";
 
-contract ProofRegistry {
 
-    mapping(address => Proof[])  proofs;
-    mapping(string => ExistingProof)  hashes;
-    address owner;
+contract ProofRegistry is Destructible {
+
+    mapping(address => Proof[]) private proofs;
+    mapping(string => ExistingProof) private hashes;
+    address public owner;
 
     struct Proof {
         string ipfsHash;
@@ -22,14 +24,7 @@ contract ProofRegistry {
         owner = msg.sender;
     }
 
-    modifier onlyOwner {
-        require(owner == msg.sender);
-        _;
-    }
-
-    function kill() public onlyOwner{
-        selfdestruct(owner);
-    }
+    function() public payable { }
 
     function createProof(string _ipfsHash, string _tags) public returns(bool) {
         require(hashes[_ipfsHash].exists != 1);
