@@ -1,0 +1,27 @@
+@import "../node_modules/react-tagging-input/dist/styles.css";
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 50px;
+}
+
+.App-header {
+  background-color: #3700B3;
+  height: 150px;
+  padding: 40px;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  color: white;
+}
+
+.App-title {
+  font-size: 2em;
+}
+
+.App-intro {
+  font-size: large;
+}
+
