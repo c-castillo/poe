@@ -1,0 +1,4 @@
+ProofRegistry is deployed at:
+0xa65757d5c29c28a5afcd436011ea430fe8b5dc8c
+
+on the rinkeby testnet.
