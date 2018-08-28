@@ -1,17 +1,18 @@
-pragma solidity ^0.4.24;
-pragma experimental ABIEncoderV2;
+pragma solidity 0.4.24;
 
 import "zeppelin/contracts/lifecycle/Destructible.sol";
 
 
 contract ProofRegistry is Destructible {
 
-    mapping(address => Proof[]) private proofs;
-    mapping(string => ExistingProof) private hashes;
+    mapping(address => Proof[]) public proofs;
+    mapping(bytes32 => ExistingProof) private hashes;
     address public owner;
 
     struct Proof {
-        string ipfsHash;
+        bytes32 digest;
+        uint8 hashFunction;
+        uint8 size;
         string tags;
     }
 
@@ -20,20 +21,25 @@ contract ProofRegistry is Destructible {
         uint8 exists;
     }
 
-    constructor() public {
-        owner = msg.sender;
-    }
-
     function() public payable { }
 
-    function createProof(string _ipfsHash, string _tags) public returns(bool) {
+    function createProof(bytes32 _digest, uint8 _hashFunction, uint8 _size, string _tags)
+        public
+        returns (bool success)
+    {
+        bytes32 _ipfsHash = getIPFSHash(_digest, _hashFunction, _size);
         require(hashes[_ipfsHash].exists != 1);
-        proofs[msg.sender].push(Proof({ipfsHash: _ipfsHash, tags: _tags}));
+        proofs[msg.sender].push(Proof(_digest, _hashFunction, _size, _tags));
         hashes[_ipfsHash] = ExistingProof({owner: msg.sender, exists: 1});
         return true;
     }
 
-    function verifyProof(address _address, string _ipfsHash) public view returns(bool) {
+    function verifyProof(address _address, bytes32 _digest, uint8 _hashFunction, uint8 _size)
+        public
+        view
+        returns(bool)
+    {
+        bytes32 _ipfsHash = getIPFSHash(_digest, _hashFunction, _size);
         if (hashes[_ipfsHash].owner == _address) {
             return true;
         } else {
@@ -41,17 +47,17 @@ contract ProofRegistry is Destructible {
         }
     }
 
-    function getProofs() public view returns (string[], string[]) {
-        string[] memory hashList = new string[](proofs[msg.sender].length);
-        string[] memory tagList = new string[](proofs[msg.sender].length);
-
-        for (uint i = 0; i < proofs[msg.sender].length; i++) {
-            Proof storage _proof = proofs[msg.sender][i];
-            hashList[i] = _proof.ipfsHash;
-            tagList[i] = _proof.tags;
-        }
-
-        return (hashList, tagList);
+    function getIPFSHash(bytes32 _digest, uint8 _hashFunction, uint8 _size)
+        internal
+        pure
+        returns (bytes32 hash)
+    {
+        return keccak256(abi.encodePacked(_digest, _hashFunction, _size));
     }
+
+    constructor () public {
+        owner = msg.sender;
+    }
+
 
 }

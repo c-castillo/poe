@@ -2,6 +2,10 @@ import React from "react";
 import web3 from "./web3";
 import Tags from "react-tagging-input";
 import ipfs from "./ipfs";
+import {
+  getBytes32FromMultiash,
+  getMultihashFromContractResponse
+} from "./multihash";
 import proofRegistry from "./proofRegistry";
 
 import {
@@ -34,6 +38,8 @@ export default class Example extends React.Component {
       myProofs: [],
       tags: []
     };
+
+    this.onLoad();
   }
 
   toggle(tab) {
@@ -100,8 +106,11 @@ export default class Example extends React.Component {
       this.setState({ ipfsHash: ipfsHash[0].hash });
       // call Ethereum contract method "sendHash" and .send IPFS hash to etheruem contract
       //return the transaction hash from the ethereum contract
+      const { digest, hashFunction, size } = getBytes32FromMultiash(
+        ipfsHash[0].hash
+      );
       proofRegistry.methods
-        .createProof(this.state.ipfsHash, this.state.tags.join(";"))
+        .createProof(digest, hashFunction, size, this.state.tags.join(";"))
         .send(
           {
             from: accounts[0]
@@ -110,35 +119,19 @@ export default class Example extends React.Component {
             this.setState({ transactionHash });
           }
         );
+      this.state.myProofs.push({
+        hash: ipfsHash[0].hash,
+        tags: "#" + this.state.tags.join(" #")
+      });
     });
   };
 
-  onOpenMyProofs = async () => {
+  onLoad = async () => {
     const accounts = await web3.eth.getAccounts();
-    proofRegistry.methods
-      .getProofs()
-      .call({
-        from: accounts[0]
-      })
-      .then(prfs => {
-        console.log("prfs", prfs);
-      });
-    proofRegistry.methods.getProofs().call(
-      {
-        from: accounts[0]
-      },
-      (error, _myProofs) => {
-        if (!error && _myProofs) {
-          console.log(_myProofs);
-          for (var i = 0; i < _myProofs[0].length; i++) {
-            this.state.myProofs.push({
-              hash: _myProofs[0][i],
-              tags: _myProofs[1][i]
-            });
-          }
-        }
-      }
-    );
+    proofRegistry.methods.proofs(accounts[0], 0).call({}, (error, _myProof) => {
+      let ipfsHash = getMultihashFromContractResponse(_myProof);
+      this.state.myProofs.push({ hash: ipfsHash, tags: _myProof.tags });
+    });
   };
 
   render() {
@@ -170,7 +163,6 @@ export default class Example extends React.Component {
                 })}
                 onClick={() => {
                   this.toggle("2");
-                  this.onOpenMyProofs();
                 }}
               >
                 My proofs

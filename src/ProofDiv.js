@@ -2,8 +2,7 @@ import React from "react";
 import { ListGroup, ListGroupItem, Badge } from "reactstrap";
 
 function getIpfsLink(hash) {
-  let link = "https://ipfs.io/ipfs/" + hash.trim().replace(".", "");
-  console.log(link);
+  let link = "https://ipfs.io/ipfs/" + hash;
   return link;
 }
 
