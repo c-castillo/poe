@@ -3,7 +3,7 @@
  * function when declaring them. Failure to do so will cause commands to hang. ex:
  * ```
  * mainnet: {
- *     provider: function() { 
+ *     provider: function() {
  *       return new HDWalletProvider(mnemonic, 'https://mainnet.infura.io/<infura-key>') 
  *     },
  *     network_id: '1',
@@ -20,9 +20,10 @@ module.exports = {
   networks: {
     development: {
       host: "127.0.0.1",
-      port: 7545,
+      port: 8545,
       network_id: "*", // Match any network id
-      gas: 4600000
+      gas: 4600000,
+      gasPrice: 30000000000
     },
     rinkeby: {
       provider: function() {
