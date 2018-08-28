@@ -1,6 +1,9 @@
 import web3 from "./web3";
-//Your contract address
-const address = "0x6613def95b210159ef2061966de37e7420911470";
+
+// We use the contract address that is returned by truffle deploy
+// The Contract ABI is obtained using the getABI.js script
+
+const address = "0xa65757d5c29c28a5afcd436011ea430fe8b5dc8c";
 const abi = [
   {
     constant: true,
@@ -92,6 +95,15 @@ const abi = [
     ],
     name: "verifyProof",
     outputs: [{ name: "", type: "bool" }],
+    payable: false,
+    stateMutability: "view",
+    type: "function"
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: "getNumberOfProofs",
+    outputs: [{ name: "index", type: "uint256" }],
     payable: false,
     stateMutability: "view",
     type: "function"
